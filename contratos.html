@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contratos - Espaço Infantil Anjo Gabriel</title>
+    <style>
+        :root { --primary: #006437; --secondary: #2ecc71; --background: #f4f7f6; --sidebar-bg: #ffffff; --text: #333333; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; display: flex; height: 100vh; background-color: var(--background); color: var(--text); }
+        .sidebar { width: 250px; background-color: var(--sidebar-bg); box-shadow: 2px 0 10px rgba(0,0,0,0.05); display: flex; flex-direction: column; z-index: 10; }
+        .logo-area { padding: 30px 20px; text-align: center; border-bottom: 1px solid #f0f0f0; }
+        .logo-area h2 { margin: 0; color: var(--primary); font-size: 1.5em; }
+        .logo-area span { color: var(--secondary); font-size: 0.9em; font-weight: bold; }
+        .menu { flex-grow: 1; padding: 20px 0; }
+        .menu a { display: block; padding: 15px 25px; color: #555; text-decoration: none; font-size: 16px; border-left: 4px solid transparent; transition: 0.3s; }
+        .menu a:hover, .menu a.ativo { background-color: #f8f9fa; border-left-color: var(--primary); color: var(--primary); font-weight: bold; }
+        .main-content { flex-grow: 1; padding: 40px; overflow-y: auto; }
+        h1 { margin-top: 0; color: var(--primary); }
+        .form-container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); max-width: 600px; margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        select, input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        .btn-acao { width: 100%; padding: 12px; background-color: var(--primary); color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; font-weight: bold; margin-top: 10px; transition: 0.3s; }
+        #areaContrato { padding: 40px; border: 1px solid #ccc; background-color: white; display: none; line-height: 1.6; text-align: justify; }
+        
+        @media print {
+            body { background: white; }
+            .sidebar, .form-container, h1 { display: none !important; }
+            .main-content { padding: 0; overflow: visible; }
+            #areaContrato { display: block !important; border: none; padding: 0; margin: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="logo-area">
+            <h2>Anjo Gabriel</h2>
+            <span>SISTEMA DE GESTÃO</span>
+        </div>
+        <nav class="menu">
+            <a href="index.html">📊 Dashboard</a>
+            <a href="cadastro.html">📝 Novo Cadastro</a>
+            <a href="contratos.html" class="ativo">🖨️ Contratos</a>
+            <a href="financeiro.html">💰 Financeiro</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <h1>Gerador de Contratos</h1>
+        <div class="form-container area-controles">
+            <div class="form-group">
+                <label>Selecione o Aluno:</label>
+                <select id="selectAlunoContrato">
+                    <option value="">-- Escolha um aluno --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Plano de Matrícula:</label>
+                <select id="selectPlano">
+                    <option value="Meio Período (Matutino)">Meio Período (Matutino)</option>
+                    <option value="Meio Período (Vespertino)">Meio Período (Vespertino)</option>
+                    <option value="Período Integral">Período Integral</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Valor da Mensalidade (R$):</label>
+                <input type="text" id="valorMensalidade" placeholder="Ex: 850,00">
+            </div>
+            <button onclick="gerarContrato()" class="btn-acao">Visualizar Contrato</button>
+            <button onclick="window.print()" class="btn-acao" style="background-color: var(--secondary); display: none;" id="btnImprimir">Salvar PDF / Imprimir</button>
+        </div>
+        <div id="areaContrato"></div>
+    </main>
+
+    <script>
+        const alunos = JSON.parse(localStorage.getItem('alunosAnjoGabriel')) || [];
+        const select = document.getElementById('selectAlunoContrato');
+        
+        alunos.forEach((aluno, index) => {
+            const opt = document.createElement('option');
+            opt.value = index;
+            opt.textContent = `${aluno.nomeCrianca} (Resp: ${aluno.nomeResponsavel})`;
+            select.appendChild(opt);
+        });
+
+        function gerarContrato() {
+            const index = document.getElementById('selectAlunoContrato').value;
+            const plano = document.getElementById('selectPlano').value;
+            const valor = document.getElementById('valorMensalidade').value;
+            
+            if (index === "") return alert("Selecione um aluno!");
+            const aluno = alunos[index];
+            
+            const html = `
+                <h2 style="text-align: center; color: #000;">CONTRATO DE PRESTAÇÃO DE SERVIÇOS EDUCACIONAIS</h2>
+                <p>Pelo presente instrumento particular, o <strong>Espaço Infantil Anjo Gabriel</strong> e <strong>${aluno.nomeResponsavel}</strong> (telefone: ${aluno.telefone}), responsável legal pelo menor <strong>${aluno.nomeCrianca}</strong>, nascido(a) em ${aluno.dataNascimento}, firmam contrato:</p>
+                <p><strong>Cláusula 1ª:</strong> O CONTRATADO prestará serviços no regime de <strong>${plano}</strong>.</p>
+                <p><strong>Cláusula 2ª:</strong> O CONTRATANTE pagará mensalidade de <strong>R$ ${valor || '_______'}</strong>, com vencimento todo dia <strong>${aluno.diaVencimento}</strong> de cada mês.</p>
+                <p><strong>Observações:</strong> ${aluno.observacoes || 'Nenhuma restrição.'}</p>
+                <br><br><br>
+                <p style="text-align: center;">___________________________________________________</p>
+                <p style="text-align: center;"><strong>${aluno.nomeResponsavel}</strong></p>
+                <p style="text-align: center;">___________________________________________________</p>
+                <p style="text-align: center;"><strong>Espaço Infantil Anjo Gabriel</strong></p>
+            `;
+            
+            document.getElementById('areaContrato').innerHTML = html;
+            document.getElementById('areaContrato').style.display = 'block';
+            document.getElementById('btnImprimir').style.display = 'block';
+        }
+    </script>
+</body>
+</html>

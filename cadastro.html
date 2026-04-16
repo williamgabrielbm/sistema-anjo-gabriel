@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novo Cadastro - Espaço Infantil Anjo Gabriel</title>
+    <style>
+        :root {
+            --primary: #006437; --secondary: #2ecc71; --background: #f4f7f6; --sidebar-bg: #ffffff; --text: #333333;
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; display: flex; height: 100vh; background-color: var(--background); color: var(--text); }
+        .sidebar { width: 250px; background-color: var(--sidebar-bg); box-shadow: 2px 0 10px rgba(0,0,0,0.05); display: flex; flex-direction: column; z-index: 10; }
+        .logo-area { padding: 30px 20px; text-align: center; border-bottom: 1px solid #f0f0f0; }
+        .logo-area h2 { margin: 0; color: var(--primary); font-size: 1.5em; }
+        .logo-area span { color: var(--secondary); font-size: 0.9em; font-weight: bold; }
+        .menu { flex-grow: 1; padding: 20px 0; }
+        .menu a { display: block; padding: 15px 25px; color: #555; text-decoration: none; font-size: 16px; border-left: 4px solid transparent; transition: 0.3s; }
+        .menu a:hover, .menu a.ativo { background-color: #f8f9fa; border-left-color: var(--primary); color: var(--primary); font-weight: bold; }
+        .main-content { flex-grow: 1; padding: 40px; overflow-y: auto; }
+        h1 { margin-top: 0; color: var(--primary); }
+        .form-container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); max-width: 600px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        .btn-acao { width: 100%; padding: 12px; background-color: var(--primary); color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; font-weight: bold; margin-top: 10px; transition: 0.3s; }
+        .btn-acao:hover { background-color: #004d2a; }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="logo-area">
+            <h2>Anjo Gabriel</h2>
+            <span>SISTEMA DE GESTÃO</span>
+        </div>
+        <nav class="menu">
+            <a href="index.html">📊 Dashboard</a>
+            <a href="cadastro.html" class="ativo">📝 Novo Cadastro</a>
+            <a href="contratos.html">🖨️ Contratos</a>
+            <a href="financeiro.html">💰 Financeiro</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <h1>Novo Cadastro de Aluno</h1>
+        <div class="form-container">
+            <form id="formCadastro">
+                <div class="form-group">
+                    <label>Nome da Criança:</label>
+                    <input type="text" id="cadNome" required>
+                </div>
+                <div class="form-group">
+                    <label>Data de Nascimento:</label>
+                    <input type="date" id="cadDataNascimento" required>
+                </div>
+                <div class="form-group">
+                    <label>Nome do Responsável:</label>
+                    <input type="text" id="cadResponsavel" required>
+                </div>
+                <div class="form-group">
+                    <label>Telefone (WhatsApp):</label>
+                    <input type="tel" id="cadTelefone" required>
+                </div>
+                <div class="form-group">
+                    <label>Dia de Vencimento:</label>
+                    <input type="number" id="cadDiaVencimento" min="1" max="31" required>
+                </div>
+                <div class="form-group">
+                    <label>Alergias ou Observações:</label>
+                    <textarea id="cadObservacoes" rows="2"></textarea>
+                </div>
+                <button type="submit" class="btn-acao">Salvar Cadastro</button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('formCadastro').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const novoAluno = {
+                nomeCrianca: document.getElementById('cadNome').value,
+                dataNascimento: document.getElementById('cadDataNascimento').value,
+                nomeResponsavel: document.getElementById('cadResponsavel').value,
+                telefone: document.getElementById('cadTelefone').value,
+                diaVencimento: document.getElementById('cadDiaVencimento').value,
+                observacoes: document.getElementById('cadObservacoes').value
+            };
+            
+            const alunos = JSON.parse(localStorage.getItem('alunosAnjoGabriel')) || [];
+            alunos.push(novoAluno);
+            localStorage.setItem('alunosAnjoGabriel', JSON.stringify(alunos));
+            
+            this.reset();
+            alert('Cadastro salvo com sucesso!');
+        });
+    </script>
+</body>
+</html>

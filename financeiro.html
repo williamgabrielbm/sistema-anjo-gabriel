@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financeiro - Espaço Infantil Anjo Gabriel</title>
+    <style>
+        :root { --primary: #006437; --secondary: #2ecc71; --success: #27ae60; --danger: #e74c3c; --background: #f4f7f6; --sidebar-bg: #ffffff; --text: #333333; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; display: flex; height: 100vh; background-color: var(--background); color: var(--text); }
+        .sidebar { width: 250px; background-color: var(--sidebar-bg); box-shadow: 2px 0 10px rgba(0,0,0,0.05); display: flex; flex-direction: column; z-index: 10; }
+        .logo-area { padding: 30px 20px; text-align: center; border-bottom: 1px solid #f0f0f0; }
+        .logo-area h2 { margin: 0; color: var(--primary); font-size: 1.5em; }
+        .logo-area span { color: var(--secondary); font-size: 0.9em; font-weight: bold; }
+        .menu { flex-grow: 1; padding: 20px 0; }
+        .menu a { display: block; padding: 15px 25px; color: #555; text-decoration: none; font-size: 16px; border-left: 4px solid transparent; transition: 0.3s; }
+        .menu a:hover, .menu a.ativo { background-color: #f8f9fa; border-left-color: var(--primary); color: var(--primary); font-weight: bold; }
+        .main-content { flex-grow: 1; padding: 40px; overflow-y: auto; }
+        h1 { margin-top: 0; color: var(--primary); }
+        .tabela-container { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background-color: #f8f9fa; color: var(--primary); font-weight: 600; }
+        .btn-status { padding: 8px 15px; border: none; border-radius: 20px; font-weight: bold; cursor: pointer; color: white; }
+        .btn-pendente { background-color: var(--danger); }
+        .btn-pago { background-color: var(--success); }
+        .dia-destaque { background-color: #e8f4f8; padding: 5px 10px; border-radius: 5px; font-weight: bold; color: var(--secondary); }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="logo-area">
+            <h2>Anjo Gabriel</h2>
+            <span>SISTEMA DE GESTÃO</span>
+        </div>
+        <nav class="menu">
+            <a href="index.html">📊 Dashboard</a>
+            <a href="cadastro.html">📝 Novo Cadastro</a>
+            <a href="contratos.html">🖨️ Contratos</a>
+            <a href="financeiro.html" class="ativo">💰 Financeiro</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <h1>Controle de Mensalidades</h1>
+        <div class="tabela-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Criança</th>
+                        <th>Responsável</th>
+                        <th>Vencimento</th>
+                        <th>Status</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="corpoTabelaFinanceiro"></tbody>
+            </table>
+        </div>
+    </main>
+
+    <script>
+        function carregarTabela() {
+            const alunos = JSON.parse(localStorage.getItem('alunosAnjoGabriel')) || [];
+            const pagamentos = JSON.parse(localStorage.getItem('pagamentosAnjoGabriel')) || {};
+            const tbody = document.getElementById('corpoTabelaFinanceiro');
+            tbody.innerHTML = '';
+
+            const alunosOrdenados = alunos.map((a, i) => ({ ...a, indexOriginal: i }))
+                                          .sort((a, b) => (parseInt(a.diaVencimento) || 99) - (parseInt(b.diaVencimento) || 99));
+
+            alunosOrdenados.forEach(aluno => {
+                const i = aluno.indexOriginal;
+                const status = pagamentos[i] || 'pendente';
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${aluno.nomeCrianca}</strong></td>
+                    <td>${aluno.nomeResponsavel}</td>
+                    <td><span class="dia-destaque">Dia ${aluno.diaVencimento || '--'}</span></td>
+                    <td><span style="color: ${status==='pago'?'#27ae60':'#e74c3c'}; font-weight: bold;">${status==='pago'?'Pago':'Pendente'}</span></td>
+                    <td><button class="btn-status ${status==='pago'?'btn-pago':'btn-pendente'}" onclick="mudarStatus(${i})">${status==='pago'?'Desfazer':'Marcar Pago'}</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function mudarStatus(index) {
+            let pagamentos = JSON.parse(localStorage.getItem('pagamentosAnjoGabriel')) || {};
+            pagamentos[index] = pagamentos[index] === 'pago' ? 'pendente' : 'pago';
+            localStorage.setItem('pagamentosAnjoGabriel', JSON.stringify(pagamentos));
+            carregarTabela();
+        }
+
+        carregarTabela();
+    </script>
+</body>
+</html>
